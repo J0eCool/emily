@@ -32,7 +32,7 @@ let run = {
 }
 
 let keyMutateArgument    = ArgPlus.keyMutate @@ fun l -> "--" ^ (String.concat "-" l)
-let keyMutateEnvironment = ArgPlus.keyMutate @@ fun l -> "EMILY_" ^ (String.concat "_" @@ List.map String.uppercase l)
+let keyMutateEnvironment = ArgPlus.keyMutate @@ fun l -> "EMILY_" ^ (String.concat "_" @@ List.map String.uppercase_ascii l)
 
 let buildPathSetSpec name action whatIs =
     (name, Arg.String(action), "Directory root for packages loaded from \"" ^ whatIs ^ "\"")

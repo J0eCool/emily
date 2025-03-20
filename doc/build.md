@@ -46,6 +46,17 @@ In order to build this, you will need to install:
 - containers -- I use 0.9, installed via opam
 - fileutils -- I use 0.4.4, installed via opam
 
+(J0eCool here, I used these versions on Windows)
+
+- `ocaml` -- 5.3.0
+- `ocamlfind` -- 1.9.8
+- `ocamlbuild` -- 0.16.1, had to `opam install` this too
+- `sedlex` -- 3.3, had to add `sedlex.ppx` to _tags
+- `containers` -- 3.15
+- `fileutils` -- 0.6.6
+
+(also needed to change `String.uppercase` to `String.uppercase_ascii`... I'm sure it still works the same right?)
+
 You should be able to just install ocaml and opam from your package manager, and then run `opam install ocamlfind sedlex containers`.
 
 To build, this should be sufficient (assuming everything above is installed:
