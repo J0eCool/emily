@@ -26,7 +26,7 @@
 #
 
 # Usage: ./develop/regression.py -a
-# Tested with Python 2.6.1
+# Tested with Python 3.10.6
 
 import sys
 import os
@@ -107,7 +107,7 @@ if flag("untested"):
                 filepath = os.path.join(path, filename)
                 checkTested(filepath)
         elif not (path.endswith(".txt") or path in files):
-            print path # If a normal file, just check it
+            print(path) # If a normal file, just check it
     checkTested(projectRelative(stddir)) # Check stddir tree
     sys.exit(0)
 
@@ -166,7 +166,7 @@ for filename in files:
                             env = copy.deepcopy( os.environ )
                         kvline = kvp.match( envline.group(1) )
                         if not kvline:
-                            print "\tMALFORMED TEST: \"Env:\" line not of form KEY=VALUE"
+                            print("\tMALFORMED TEST: \"Env:\" line not of form KEY=VALUE")
                             earlyfail = True
                             break
                         env[kvline.group(1)] = kvline.group(2)
@@ -178,13 +178,13 @@ for filename in files:
         failures += 1
         continue
 
-    print "Running %s..." % (filename)
+    print("Running %s..." % (filename))
     try:
         proc = subprocess.Popen(stdcall+args+([] if omit else [filename]), stdout=subprocess.PIPE, stderr=subprocess.PIPE,env=env)
     except OSError as e:
-        print "\nCATASTROPHIC FAILURE: Couldn't find emily?:"
-        print e
-        print "Make sure you ran a plain `make` first."
+        print("\nCATASTROPHIC FAILURE: Couldn't find emily?:")
+        print(e)
+        print("Make sure you ran a plain `make` first.")
         sys.exit(1)
     result = proc.wait()
     outstr, errstr = proc.communicate()
@@ -195,23 +195,32 @@ for filename in files:
     outstr = outstr.rstrip()
     errstr = errstr.rstrip()
 
+    def check_outs(outstr, outlines):
+        """A custom procedure to compare outstr without outlines, their types are mismatched in Python3"""
+        if len(outstr) != len(outlines):
+            return False
+        for i in range(len(outstr)):
+            if outstr[i] != outlines[i]:
+                return False
+        return True
+
     if result ^ expectfail:
-        print "\tFAIL:   Process failure " + ("expected" if expectfail else "not expected") + " but " + ("seen" if result else "not seen")
+        print("\tFAIL:   Process failure " + ("expected" if expectfail else "not expected") + " but " + ("seen" if result else "not seen"))
         if errstr:
-            print "\n"+pretag("STDERR",errstr)
+            print("\n"+pretag("STDERR",errstr))
         failures += 1
-    elif outstr != outlines:
-        print "\tFAIL:   Output differs"
-        print "\n%s\n\n%s" % ( pretag("EXPECT", outlines), pretag("STDOUT",outstr) )
+    elif not check_outs(outstr, outlines):
+        print("\tFAIL:   Output differs")
+        print("\n%s\n\n%s" % ( pretag("EXPECT", outlines), pretag("STDOUT", outstr) ))
         failures += 1
     elif flag("v"):
         if outstr:
-            print pretag("STDOUT", outstr)
+            print(pretag("STDOUT", outstr))
         if outstr and errstr:
-            print
+            print()
         if errstr:
-            print pretag("STDERR",errstr)
+            print(pretag("STDERR",errstr))
 
-print "\n%d tests failed of %d" % (failures, len(files))
+print("\n%d tests failed of %d" % (failures, len(files)))
 
 sys.exit(0 if failures == 0 else 1)
